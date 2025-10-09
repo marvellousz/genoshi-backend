@@ -1,4 +1,4 @@
-FROM python:3.11-slim as builder
+FROM python:3.11-slim
 
 WORKDIR /app
 
@@ -7,19 +7,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
-RUN pip install --no-cache-dir --user -r requirements.txt
-
-FROM python:3.11-slim
-
-WORKDIR /app
-
-COPY --from=builder /root/.local /root/.local
+RUN pip install --no-cache-dir -r requirements.txt
 
 COPY app/ ./app/
 COPY data/ ./data/
 COPY run.py .
-
-ENV PATH=/root/.local/bin:$PATH
 
 RUN useradd -m -u 1000 appuser && \
     chown -R appuser:appuser /app
